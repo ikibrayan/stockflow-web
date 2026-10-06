@@ -1,0 +1,154 @@
+<div class="page">
+  <header class="page-header">
+    <div>
+      <p class="page-eyebrow">
+        Customers
+      </p>
+
+      <h1 class="page-title">
+        Customers
+      </h1>
+
+      <p class="page-subtitle">
+        Manage the customers registered in StockFlow.
+      </p>
+    </div>
+
+    @if (canCreateCustomers()) {
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="openCreateForm()"
+      >
+        Add customer
+      </button>
+    }
+  </header>
+
+  @if (successMessage()) {
+    <div class="feedback feedback--success">
+      {{ successMessage() }}
+    </div>
+  }
+
+  @if (isLoading()) {
+    <section class="card">
+      <div class="state">
+        Loading customers...
+      </div>
+    </section>
+  } @else if (errorMessage()) {
+    <div class="feedback feedback--error">
+      {{ errorMessage() }}
+    </div>
+  } @else {
+    <section class="card customers-card">
+      @if (customers().length === 0) {
+        <div class="empty-state">
+          <div class="empty-state__icon">
+            C
+          </div>
+
+          <h2>
+            No customers yet
+          </h2>
+
+          <p>
+            Register your first customer to start creating sales.
+          </p>
+
+          @if (canCreateCustomers()) {
+            <button
+              type="button"
+              class="btn btn-primary"
+              (click)="openCreateForm()"
+            >
+              Add customer
+            </button>
+          }
+        </div>
+      } @else {
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Document</th>
+                <th>Email</th>
+                <th>Phone</th>
+
+                @if (canEditCustomers()) {
+                  <th></th>
+                }
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (
+                customer of customers();
+                track customer.id
+              ) {
+                <tr>
+                  <td>
+                    <div class="customer-info">
+                      <div class="customer-info__icon">
+                        {{ customer.name.charAt(0).toUpperCase() }}
+                      </div>
+
+                      <strong>
+                        {{ customer.name }}
+                      </strong>
+                    </div>
+                  </td>
+
+                  <td>
+                    {{ customer.document }}
+                  </td>
+
+                  <td>
+                    {{ customer.email }}
+                  </td>
+
+                  <td>
+                    {{ customer.phone }}
+                  </td>
+
+
+                  @if (canEditCustomers()) {
+                    <td class="table-actions">
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        (click)="openEditForm(customer)"
+                      >
+                        Edit
+                      </button>
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  }
+</div>
+
+@if (isFormOpen()) {
+  <div class="modal">
+    <div
+      class="modal__backdrop"
+      (click)="closeForm()"
+    ></div>
+
+    <div class="modal__content">
+      <app-customer-form
+        [customer]="selectedCustomer()"
+        [isSubmitting]="isSubmitting()"
+        (save)="saveCustomer($event)"
+        (cancel)="closeForm()"
+      />
+    </div>
+  </div>
+}

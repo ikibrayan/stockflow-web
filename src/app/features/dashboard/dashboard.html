@@ -1,0 +1,264 @@
+<div class="page">
+  <header class="page-header">
+    <div>
+      <p class="page-eyebrow">Overview</p>
+
+      <h1 class="page-title">
+        Dashboard
+      </h1>
+
+      <p class="page-subtitle">
+        Monitor your inventory, sales and recent activity.
+      </p>
+    </div>
+  </header>
+
+  @if (isLoading()) {
+    <section class="card">
+      <div class="state">
+        Loading dashboard...
+      </div>
+    </section>
+  } @else if (errorMessage()) {
+    <div class="feedback feedback--error">
+      {{ errorMessage() }}
+    </div>
+  } @else {
+    <section class="dashboard-stats">
+      <article class="card dashboard-stat">
+        <div class="dashboard-stat__header">
+          <span>Products</span>
+
+          <div class="dashboard-stat__icon">
+            P
+          </div>
+        </div>
+
+        <strong class="dashboard-stat__value">
+          {{ totalProducts() }}
+        </strong>
+
+        <p>
+          Products in catalog
+        </p>
+      </article>
+
+      <article class="card dashboard-stat">
+        <div class="dashboard-stat__header">
+          <span>Customers</span>
+
+          <div class="dashboard-stat__icon">
+            C
+          </div>
+        </div>
+
+        <strong class="dashboard-stat__value">
+          {{ totalCustomers() }}
+        </strong>
+
+        <p>
+          Registered customers
+        </p>
+      </article>
+
+      <article class="card dashboard-stat">
+        <div class="dashboard-stat__header">
+          <span>Sales</span>
+
+          <div class="dashboard-stat__icon">
+            S
+          </div>
+        </div>
+
+        <strong class="dashboard-stat__value">
+          {{ totalSales() }}
+        </strong>
+
+        <p>
+          Total registered sales
+        </p>
+      </article>
+
+      <article class="card dashboard-stat">
+        <div class="dashboard-stat__header">
+          <span>Low stock</span>
+
+          <div class="dashboard-stat__icon dashboard-stat__icon--warning">
+            !
+          </div>
+        </div>
+
+        <strong class="dashboard-stat__value">
+          {{ lowStockProducts().length }}
+        </strong>
+
+        <p>
+          Products at or below minimum stock
+        </p>
+      </article>
+    </section>
+
+    <section class="dashboard-grid">
+      <article class="card dashboard-panel">
+        <header class="dashboard-panel__header">
+          <div>
+            <h2>Recent sales</h2>
+            <p>Latest registered sales.</p>
+          </div>
+        </header>
+
+        @if (recentSales().length === 0) {
+          <div class="dashboard-empty">
+            No sales registered yet.
+          </div>
+        } @else {
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Total</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                @for (sale of recentSales(); track sale.id) {
+                  <tr>
+                    <td>
+                      <strong class="dashboard-primary">
+                        {{ sale.customerName }}
+                      </strong>
+                    </td>
+
+                    <td>
+                      {{ sale.total | currency:'USD':'symbol':'1.2-2' }}
+                    </td>
+
+                    <td>
+                      {{ sale.createdAt | date:'MMM d, y' }}
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </article>
+
+      <article class="card dashboard-panel">
+        <header class="dashboard-panel__header">
+          <div>
+            <h2>Low stock</h2>
+            <p>Products that may need attention.</p>
+          </div>
+        </header>
+
+        @if (lowStockProducts().length === 0) {
+          <div class="dashboard-empty">
+            Stock levels look healthy.
+          </div>
+        } @else {
+          <div class="dashboard-low-stock">
+            @for (product of lowStockProducts(); track product.id) {
+              <div class="dashboard-low-stock__item">
+                <div>
+                  <strong>
+                    {{ product.name }}
+                  </strong>
+
+                  <span>
+                    {{ product.categoryName }}
+                  </span>
+                </div>
+
+                <div class="dashboard-low-stock__value">
+                  <strong>
+                    {{ product.stock }}
+                  </strong>
+
+                  <span>
+                    Min. {{ product.minimumStock }}
+                  </span>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </article>
+    </section>
+
+    <section class="card dashboard-panel">
+      <header class="dashboard-panel__header">
+        <div>
+          <h2>Recent inventory movements</h2>
+          <p>Latest stock activity registered in StockFlow.</p>
+        </div>
+      </header>
+
+      @if (recentMovements().length === 0) {
+        <div class="dashboard-empty">
+          No inventory movements registered yet.
+        </div>
+      } @else {
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Type</th>
+                <th>Stock change</th>
+                <th>Reference</th>
+                <th>User</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (movement of recentMovements(); track movement.id) {
+                <tr>
+                  <td>
+                    <strong class="dashboard-primary">
+                      {{ movement.productName }}
+                    </strong>
+                  </td>
+
+                  <td>
+                    <span
+                      class="badge"
+                      [class.badge--success]="movement.type === 'Entry'"
+                      [class.badge--warning]="movement.type === 'Adjustment'"
+                      [class.dashboard-badge--exit]="movement.type === 'Exit'"
+                    >
+                      {{ movement.type }}
+                    </span>
+                  </td>
+
+                  <td>
+                    <span class="dashboard-stock-change">
+                      {{ movement.previousStock }}
+                      →
+                      {{ movement.newStock }}
+                    </span>
+                  </td>
+
+                  <td>
+                    {{ movement.reference }}
+                  </td>
+
+                  <td>
+                    {{ movement.userName }}
+                  </td>
+
+                  <td>
+                    {{ movement.createdAt | date:'MMM d, y' }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  }
+</div>

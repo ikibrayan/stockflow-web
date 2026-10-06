@@ -1,0 +1,181 @@
+<div class="page">
+  <header class="page-header">
+    <div>
+      <p class="page-eyebrow">
+        Operations
+      </p>
+
+      <h1 class="page-title">
+        Sales
+      </h1>
+
+      <p class="page-subtitle">
+        Register sales and review transaction history.
+      </p>
+    </div>
+
+    @if (canCreateSales()) {
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="openCreateForm()"
+      >
+        New sale
+      </button>
+    }
+  </header>
+
+  @if (successMessage()) {
+    <div class="feedback feedback--success">
+      {{ successMessage() }}
+    </div>
+  }
+
+  @if (isLoading()) {
+    <section class="card">
+      <div class="state">
+        Loading sales...
+      </div>
+    </section>
+  } @else if (errorMessage()) {
+    <div class="feedback feedback--error">
+      {{ errorMessage() }}
+    </div>
+  } @else {
+    @if (canViewSales()) {
+      <section class="card sales-card">
+        @if (sales().length === 0) {
+          <div class="empty-state">
+            <div class="empty-state__icon">
+              S
+            </div>
+
+            <h2>
+              No sales yet
+            </h2>
+
+            <p>
+              Create your first sale to start tracking transactions.
+            </p>
+
+            @if (canCreateSales()) {
+              <button
+                type="button"
+                class="btn btn-primary"
+                (click)="openCreateForm()"
+              >
+                New sale
+              </button>
+            }
+          </div>
+        } @else {
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Sale</th>
+                  <th>Customer</th>
+                  <th>Seller</th>
+                  <th>Items</th>
+                  <th>Total</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                @for (sale of sales(); track sale.id) {
+                  <tr>
+                    <td>
+                      <div class="sale-reference">
+                        <div class="sale-reference__icon">
+                          S
+                        </div>
+
+                        <strong>
+                          #{{ sale.id }}
+                        </strong>
+                      </div>
+                    </td>
+
+                    <td>
+                      {{ sale.customerName }}
+                    </td>
+
+                    <td>
+                      {{ sale.userName }}
+                    </td>
+
+                    <td>
+                      <span class="badge badge--muted">
+                        {{ sale.items.length }}
+                        {{ sale.items.length === 1 ? 'item' : 'items' }}
+                      </span>
+                    </td>
+
+                    <td>
+                      <strong class="sale-total">
+                        {{ sale.total | currency:'USD':'symbol':'1.2-2' }}
+                      </strong>
+                    </td>
+
+                    <td>
+                      {{ sale.createdAt | date:'medium' }}
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </section>
+    } @else {
+      <section class="card">
+        <div class="sales-restricted">
+          <div class="sales-restricted__icon">
+            S
+          </div>
+
+          <div>
+            <h2>
+              Create a new sale
+            </h2>
+
+            <p>
+              Your role can register sales, but sales history is available
+              only to managers and administrators.
+            </p>
+          </div>
+
+          @if (canCreateSales()) {
+            <button
+              type="button"
+              class="btn btn-primary"
+              (click)="openCreateForm()"
+            >
+              New sale
+            </button>
+          }
+        </div>
+      </section>
+    }
+  }
+</div>
+
+@if (isFormOpen()) {
+  <div class="modal">
+    <div
+      class="modal__backdrop"
+      (click)="closeForm()"
+    ></div>
+
+    <div class="modal__content sales-modal">
+      <app-sale-form
+        [customers]="customers()"
+        [products]="products()"
+        [isSubmitting]="isSubmitting()"
+        (save)="saveSale($event)"
+        (cancel)="closeForm()"
+      />
+    </div>
+  </div>
+}

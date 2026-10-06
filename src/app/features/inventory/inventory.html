@@ -1,0 +1,203 @@
+<div class="page">
+  <header class="page-header">
+    <div>
+      <p class="page-eyebrow">Operations</p>
+      <h1 class="page-title">Inventory</h1>
+
+      <p class="page-subtitle">
+        Track stock movements and manage inventory levels.
+      </p>
+    </div>
+
+    @if (canManageInventory()) {
+      <div class="inventory-actions">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="openAdjustmentForm()"
+        >
+          Adjust stock
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="openEntryForm()"
+        >
+          Add stock
+        </button>
+      </div>
+    }
+  </header>
+
+  @if (successMessage()) {
+    <div class="feedback feedback--success">
+      {{ successMessage() }}
+    </div>
+  }
+
+  @if (errorMessage()) {
+    <div class="feedback feedback--error">
+      {{ errorMessage() }}
+    </div>
+  }
+
+  <section class="card inventory-filter">
+    <div class="card-body">
+      <div class="form-field inventory-filter__field">
+        <label class="form-label" for="product-filter">
+          Filter by product
+        </label>
+
+        <select
+          id="product-filter"
+          class="form-control"
+          [value]="selectedProductId()"
+          (change)="filterByProduct(+$any($event.target).value)"
+        >
+          <option value="0">
+            All products
+          </option>
+
+          @for (product of products(); track product.id) {
+            <option [value]="product.id">
+              {{ product.name }}
+            </option>
+          }
+        </select>
+      </div>
+    </div>
+  </section>
+
+  @if (isLoading()) {
+    <section class="card">
+      <div class="state">
+        Loading inventory movements...
+      </div>
+    </section>
+  } @else {
+    <section class="card inventory-card">
+      @if (movements().length === 0) {
+        <div class="empty-state">
+          <div class="empty-state__icon">
+            I
+          </div>
+
+          <h2>No inventory movements yet</h2>
+
+          <p>
+            Inventory entries, adjustments and sales will appear here.
+          </p>
+        </div>
+      } @else {
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Type</th>
+                <th>Quantity</th>
+                <th>Previous stock</th>
+                <th>New stock</th>
+                <th>Reference</th>
+                <th>User</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (movement of movements(); track movement.id) {
+                <tr>
+                  <td>
+                    <div class="inventory-product">
+                      <div class="inventory-product__icon">
+                        {{ movement.productName.charAt(0).toUpperCase() }}
+                      </div>
+
+                      <strong>
+                        {{ movement.productName }}
+                      </strong>
+                    </div>
+                  </td>
+
+                  <td>
+                    <span
+                      class="badge"
+                      [class.badge--success]="movement.type === 'Entry'"
+                      [class.badge--warning]="movement.type === 'Adjustment'"
+                      [class.inventory-badge--exit]="movement.type === 'Exit'"
+                    >
+                      {{ movement.type }}
+                    </span>
+                  </td>
+
+                  <td>
+                    {{ movement.quantity }}
+                  </td>
+
+                  <td>
+                    {{ movement.previousStock }}
+                  </td>
+
+                  <td>
+                    <strong class="inventory-stock">
+                      {{ movement.newStock }}
+                    </strong>
+                  </td>
+
+                  <td>
+                    {{ movement.reference }}
+                  </td>
+
+                  <td>
+                    {{ movement.userName }}
+                  </td>
+
+                  <td>
+                    {{ movement.createdAt | date:'medium' }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  }
+</div>
+
+@if (formMode() === 'entry') {
+  <div class="modal">
+    <div
+      class="modal__backdrop"
+      (click)="closeForm()"
+    ></div>
+
+    <div class="modal__content">
+      <app-inventory-entry-form
+        [products]="products()"
+        [isSubmitting]="isSubmitting()"
+        (save)="saveEntry($event)"
+        (cancel)="closeForm()"
+      />
+    </div>
+  </div>
+}
+
+@if (formMode() === 'adjustment') {
+  <div class="modal">
+    <div
+      class="modal__backdrop"
+      (click)="closeForm()"
+    ></div>
+
+    <div class="modal__content">
+      <app-inventory-adjustment-form
+        [products]="products()"
+        [isSubmitting]="isSubmitting()"
+        (save)="saveAdjustment($event)"
+        (cancel)="closeForm()"
+      />
+    </div>
+  </div>
+}

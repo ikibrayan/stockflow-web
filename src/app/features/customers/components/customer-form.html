@@ -1,0 +1,166 @@
+<form
+  class="entity-form"
+  [formGroup]="form"
+  (ngSubmit)="submit()"
+  novalidate
+>
+  <header class="entity-form__header">
+    <div>
+      <p class="entity-form__eyebrow">
+        {{ customer() ? 'Edit customer' : 'New customer' }}
+      </p>
+
+      <h2 class="entity-form__title">
+        {{ customer() ? 'Update customer' : 'Add customer' }}
+      </h2>
+
+      <p class="entity-form__subtitle">
+        {{ customer()
+          ? 'Update the customer information below.'
+          : 'Register a new customer.' }}
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="entity-form__close"
+      aria-label="Close"
+      (click)="close()"
+    >
+      ×
+    </button>
+  </header>
+
+  <div class="entity-form__body">
+    <div class="form-field">
+      <label
+        class="form-label"
+        for="customer-name"
+      >
+        Name
+      </label>
+
+      <input
+        id="customer-name"
+        type="text"
+        class="form-control"
+        formControlName="name"
+        placeholder="Customer name"
+      />
+
+      @if (
+        form.controls.name.invalid &&
+        form.controls.name.touched
+      ) {
+        <span class="form-error">
+          Customer name is required.
+        </span>
+      }
+    </div>
+
+    <div class="form-field">
+      <label
+        class="form-label"
+        for="customer-document"
+      >
+        Document
+      </label>
+
+      <input
+        id="customer-document"
+        type="text"
+        class="form-control"
+        formControlName="document"
+        placeholder="Document number"
+      />
+
+      @if (
+        form.controls.document.invalid &&
+        form.controls.document.touched
+      ) {
+        <span class="form-error">
+          Document is required.
+        </span>
+      }
+    </div>
+
+    <div class="form-grid">
+      <div class="form-field">
+        <label
+          class="form-label"
+          for="customer-email"
+        >
+          Email
+        </label>
+
+        <input
+          id="customer-email"
+          type="email"
+          class="form-control"
+          formControlName="email"
+          placeholder="customer@example.com"
+        />
+
+        @if (
+          form.controls.email.invalid &&
+          form.controls.email.touched
+        ) {
+          <span class="form-error">
+            Enter a valid email.
+          </span>
+        }
+      </div>
+
+      <div class="form-field">
+        <label
+          class="form-label"
+          for="customer-phone"
+        >
+          Phone
+        </label>
+
+        <input
+          id="customer-phone"
+          type="text"
+          class="form-control"
+          formControlName="phone"
+          placeholder="Phone number"
+        />
+
+        @if (
+          form.controls.phone.invalid &&
+          form.controls.phone.touched
+        ) {
+          <span class="form-error">
+            Phone is required.
+          </span>
+        }
+      </div>
+    </div>
+  </div>
+
+  <footer class="entity-form__footer">
+    <button
+      type="button"
+      class="btn btn-secondary"
+      [disabled]="isSubmitting()"
+      (click)="close()"
+    >
+      Cancel
+    </button>
+
+    <button
+      type="submit"
+      class="btn btn-primary"
+      [disabled]="isSubmitting()"
+    >
+      @if (isSubmitting()) {
+        Saving...
+      } @else if (customer()) {
+        Save changes
+      } @else {
+        Add customer
+      }
+    </button>
+  </footer>
+</form>

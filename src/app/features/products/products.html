@@ -1,0 +1,180 @@
+<div class="page">
+  <header class="page-header">
+    <div>
+      <p class="page-eyebrow">Catalog</p>
+      <h1 class="page-title">Products</h1>
+      <p class="page-subtitle">
+        Manage your product catalog and current stock.
+      </p>
+    </div>
+
+    @if (canManageProducts()) {
+      <button
+        class="btn btn-primary"
+        type="button"
+        (click)="openCreateForm()"
+      >
+        Add product
+      </button>
+    }
+  </header>
+
+  @if (successMessage()) {
+    <div class="feedback feedback--success">
+      {{ successMessage() }}
+    </div>
+  }
+
+  @if (isLoading()) {
+    <section class="card">
+      <div class="state">
+        Loading products...
+      </div>
+    </section>
+  } @else if (errorMessage()) {
+    <div class="feedback feedback--error">
+      {{ errorMessage() }}
+    </div>
+  } @else {
+    <section class="card products-card">
+      @if (products().length === 0) {
+        <div class="empty-state">
+          <div class="empty-state__icon">
+            P
+          </div>
+
+          <h2>No products yet</h2>
+
+          <p>
+            Add your first product to start managing inventory.
+          </p>
+
+          @if (canManageProducts()) {
+            <button
+              class="btn btn-primary"
+              type="button"
+              (click)="openCreateForm()"
+            >
+              Add product
+            </button>
+          }
+        </div>
+      } @else {
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>SKU</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Minimum</th>
+                <th>Status</th>
+
+                @if (canManageProducts()) {
+                  <th></th>
+                }
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (product of products(); track product.id) {
+                <tr>
+                  <td>
+                    <div class="product-info">
+                      <div class="product-info__icon">
+                        {{ product.name.charAt(0).toUpperCase() }}
+                      </div>
+
+                      <div class="product-info__content">
+                        <strong>
+                          {{ product.name }}
+                        </strong>
+
+                        @if (product.description) {
+                          <span>
+                            {{ product.description }}
+                          </span>
+                        }
+                      </div>
+                    </div>
+                  </td>
+
+                  <td>
+                    <span class="product-sku">
+                      {{ product.sku }}
+                    </span>
+                  </td>
+
+                  <td>
+                    {{ product.categoryName }}
+                  </td>
+
+                  <td>
+                    {{ product.price | currency:'USD':'symbol':'1.2-2' }}
+                  </td>
+
+                  <td>
+                    <span
+                      class="badge"
+                      [class.badge--warning]="product.stock <= product.minimumStock"
+                      [class.badge--muted]="product.stock > product.minimumStock"
+                    >
+                      {{ product.stock }}
+                    </span>
+                  </td>
+
+                  <td>
+                    {{ product.minimumStock }}
+                  </td>
+
+                  <td>
+                    <span
+                      class="badge"
+                      [class.badge--success]="product.isActive"
+                      [class.badge--muted]="!product.isActive"
+                    >
+                      {{ product.isActive ? 'Active' : 'Inactive' }}
+                    </span>
+                  </td>
+
+                  @if (canManageProducts()) {
+                    <td class="table-actions">
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        (click)="openEditForm(product)"
+                      >
+                        Edit
+                      </button>
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  }
+</div>
+
+@if (isFormOpen()) {
+  <div class="modal">
+    <div
+      class="modal__backdrop"
+      (click)="closeForm()"
+    ></div>
+
+    <div class="modal__content">
+      <app-product-form
+        [product]="selectedProduct()"
+        [categories]="categories()"
+        [isSubmitting]="isSubmitting()"
+        (save)="saveProduct($event)"
+        (cancel)="closeForm()"
+      />
+    </div>
+  </div>
+}

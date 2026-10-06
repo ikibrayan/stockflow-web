@@ -1,0 +1,122 @@
+<form
+  class="entity-form"
+  [formGroup]="form"
+  (ngSubmit)="submit()"
+  novalidate
+>
+  <header class="entity-form__header">
+    <div>
+      <p class="entity-form__eyebrow">
+        {{ category() ? 'Edit category' : 'New category' }}
+      </p>
+
+      <h2 class="entity-form__title">
+        {{ category() ? 'Update category' : 'Add category' }}
+      </h2>
+
+      <p class="entity-form__subtitle">
+        {{ category()
+          ? 'Update the category information below.'
+          : 'Create a new category for your product catalog.' }}
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="entity-form__close"
+      aria-label="Close"
+      (click)="close()"
+    >
+      ×
+    </button>
+  </header>
+
+  <div class="entity-form__body">
+    <div class="form-field">
+      <label
+        class="form-label"
+        for="category-name"
+      >
+        Name
+      </label>
+
+      <input
+        id="category-name"
+        type="text"
+        class="form-control"
+        formControlName="name"
+        placeholder="Category name"
+      />
+
+      @if (
+        form.controls.name.invalid &&
+        form.controls.name.touched
+      ) {
+        <span class="form-error">
+          Category name is required.
+        </span>
+      }
+    </div>
+
+    <div class="form-field">
+      <label
+        class="form-label"
+        for="category-description"
+      >
+        Description
+      </label>
+
+      <textarea
+        id="category-description"
+        class="form-control entity-form__textarea"
+        formControlName="description"
+        placeholder="Optional category description"
+        rows="4"
+      ></textarea>
+    </div>
+
+    @if (category()) {
+      <label class="form-toggle">
+        <input
+          type="checkbox"
+          formControlName="isActive"
+        />
+
+        <div>
+          <strong>
+            Active category
+          </strong>
+
+          <span>
+            Inactive categories remain stored but cannot be used normally.
+          </span>
+        </div>
+      </label>
+    }
+  </div>
+
+  <footer class="entity-form__footer">
+    <button
+      type="button"
+      class="btn btn-secondary"
+      [disabled]="isSubmitting()"
+      (click)="close()"
+    >
+      Cancel
+    </button>
+
+    <button
+      type="submit"
+      class="btn btn-primary"
+      [disabled]="isSubmitting()"
+    >
+      @if (isSubmitting()) {
+        Saving...
+      } @else if (category()) {
+        Save changes
+      } @else {
+        Add category
+      }
+    </button>
+  </footer>
+</form>

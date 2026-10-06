@@ -1,0 +1,122 @@
+<form
+  class="entity-form"
+  [formGroup]="form"
+  (ngSubmit)="submit()"
+  novalidate
+>
+  <header class="entity-form__header">
+    <div>
+      <p class="entity-form__eyebrow">Inventory adjustment</p>
+      <h2 class="entity-form__title">Adjust stock</h2>
+
+      <p class="entity-form__subtitle">
+        Set the actual stock level for a product.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="entity-form__close"
+      aria-label="Close"
+      (click)="close()"
+    >
+      ×
+    </button>
+  </header>
+
+  <div class="entity-form__body">
+    <div class="form-field">
+      <label class="form-label" for="adjustment-product">
+        Product
+      </label>
+
+      <select
+        id="adjustment-product"
+        class="form-control"
+        formControlName="productId"
+      >
+        <option [ngValue]="0" disabled>
+          Select a product
+        </option>
+
+        @for (product of products(); track product.id) {
+          <option
+            [ngValue]="product.id"
+            [disabled]="!product.isActive"
+          >
+            {{ product.name }} - Current stock: {{ product.stock }}
+          </option>
+        }
+      </select>
+
+      @if (form.controls.productId.invalid && form.controls.productId.touched) {
+        <span class="form-error">
+          Select a product.
+        </span>
+      }
+    </div>
+
+    <div class="form-field">
+      <label class="form-label" for="new-stock">
+        New stock
+      </label>
+
+      <input
+        id="new-stock"
+        type="number"
+        class="form-control"
+        formControlName="newStock"
+        min="0"
+      />
+
+      @if (form.controls.newStock.invalid && form.controls.newStock.touched) {
+        <span class="form-error">
+          Stock cannot be negative.
+        </span>
+      }
+    </div>
+
+    <div class="form-field">
+      <label class="form-label" for="adjustment-reference">
+        Reference
+      </label>
+
+      <input
+        id="adjustment-reference"
+        type="text"
+        class="form-control"
+        formControlName="reference"
+        placeholder="Example: Physical inventory count"
+      />
+
+      @if (form.controls.reference.invalid && form.controls.reference.touched) {
+        <span class="form-error">
+          Reference is required.
+        </span>
+      }
+    </div>
+  </div>
+
+  <footer class="entity-form__footer">
+    <button
+      type="button"
+      class="btn btn-secondary"
+      [disabled]="isSubmitting()"
+      (click)="close()"
+    >
+      Cancel
+    </button>
+
+    <button
+      type="submit"
+      class="btn btn-primary"
+      [disabled]="isSubmitting()"
+    >
+      @if (isSubmitting()) {
+        Saving...
+      } @else {
+        Adjust stock
+      }
+    </button>
+  </footer>
+</form>

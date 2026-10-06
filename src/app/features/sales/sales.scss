@@ -1,0 +1,83 @@
+.sales-card {
+  overflow: hidden;
+}
+
+.sale-reference {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.sale-reference__icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-muted);
+  color: var(--color-primary);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.sale-reference strong {
+  color: var(--color-text);
+}
+
+.sale-total {
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+.sales-modal {
+  max-width: 48rem;
+}
+
+.sales-restricted {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-8);
+
+  h2 {
+    margin: 0 0 var(--space-2);
+    color: var(--color-text);
+    font-size: 1rem;
+  }
+
+  p {
+    max-width: 35rem;
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+
+  .btn {
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+}
+
+.sales-restricted__icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+@media (max-width: 700px) {
+  .sales-restricted {
+    align-items: flex-start;
+    flex-direction: column;
+
+    .btn {
+      margin-left: 0;
+    }
+  }
+}

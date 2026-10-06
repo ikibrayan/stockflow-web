@@ -1,0 +1,167 @@
+<div class="page">
+  <header class="page-header">
+    <div>
+      <p class="page-eyebrow">
+        Catalog
+      </p>
+
+      <h1 class="page-title">
+        Categories
+      </h1>
+
+      <p class="page-subtitle">
+        Organize your products into manageable categories.
+      </p>
+    </div>
+
+    @if (canManageCategories()) {
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="openCreateForm()"
+      >
+        Add category
+      </button>
+    }
+  </header>
+
+  @if (successMessage()) {
+    <div class="feedback feedback--success">
+      {{ successMessage() }}
+    </div>
+  }
+
+  @if (isLoading()) {
+    <section class="card">
+      <div class="state">
+        Loading categories...
+      </div>
+    </section>
+  } @else if (errorMessage()) {
+    <div class="feedback feedback--error">
+      {{ errorMessage() }}
+    </div>
+  } @else {
+    <section class="card categories-card">
+      @if (categories().length === 0) {
+        <div class="empty-state">
+          <div class="empty-state__icon">
+            C
+          </div>
+
+          <h2>
+            No categories yet
+          </h2>
+
+          <p>
+            Create your first category to organize your products.
+          </p>
+
+          @if (canManageCategories()) {
+            <button
+              type="button"
+              class="btn btn-primary"
+              (click)="openCreateForm()"
+            >
+              Add category
+            </button>
+          }
+        </div>
+      } @else {
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Status</th>
+
+                @if (canManageCategories()) {
+                  <th></th>
+                }
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (
+                category of categories();
+                track category.id
+              ) {
+                <tr>
+                  <td>
+                    <div class="category-info">
+                      <div class="category-info__icon">
+                        {{ category.name.charAt(0).toUpperCase() }}
+                      </div>
+
+                      <strong>
+                        {{ category.name }}
+                      </strong>
+                    </div>
+                  </td>
+
+                  <td>
+                    @if (category.description) {
+                      <span class="category-description">
+                        {{ category.description }}
+                      </span>
+                    } @else {
+                      <span
+                        class="
+                          category-description
+                          category-description--empty
+                        "
+                      >
+                        No description
+                      </span>
+                    }
+                  </td>
+
+                  <td>
+                    <span
+                      class="badge"
+                      [class.badge--success]="category.isActive"
+                      [class.badge--muted]="!category.isActive"
+                    >
+                      {{ category.isActive ? 'Active' : 'Inactive' }}
+                    </span>
+                  </td>
+
+                  @if (canManageCategories()) {
+                    <td class="table-actions">
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        (click)="openEditForm(category)"
+                      >
+                        Edit
+                      </button>
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  }
+</div>
+
+@if (isFormOpen()) {
+  <div class="modal">
+    <div
+      class="modal__backdrop"
+      (click)="closeForm()"
+    ></div>
+
+    <div class="modal__content">
+      <app-category-form
+        [category]="selectedCategory()"
+        [isSubmitting]="isSubmitting()"
+        (save)="saveCategory($event)"
+        (cancel)="closeForm()"
+      />
+    </div>
+  </div>
+}

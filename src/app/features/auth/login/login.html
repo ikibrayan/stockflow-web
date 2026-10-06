@@ -1,0 +1,83 @@
+<div class="auth-page">
+  <section class="auth-brand">
+    <div class="auth-brand__content">
+      <span class="auth-brand__eyebrow">StockFlow</span>
+
+      <h1>Inventory and sales, under control.</h1>
+
+      <p>
+        Manage products, customers, sales and inventory from one clean workspace.
+      </p>
+    </div>
+  </section>
+
+  <section class="auth-form-section">
+    <div class="auth-card">
+      <div class="auth-card__header">
+        <span class="auth-card__logo">SF</span>
+
+        <div>
+          <h2>Welcome back</h2>
+          <p>Sign in to continue to StockFlow.</p>
+        </div>
+      </div>
+
+      <form
+        class="auth-form"
+        [formGroup]="form"
+        (ngSubmit)="submit()"
+        novalidate
+      >
+        <div class="form-field">
+          <label for="email">Email</label>
+
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="admin@stockflow.com"
+            autocomplete="email"
+          />
+
+          @if (form.controls.email.invalid && form.controls.email.touched) {
+            <small>Please enter a valid email.</small>
+          }
+        </div>
+
+        <div class="form-field">
+          <label for="password">Password</label>
+
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+          />
+
+          @if (form.controls.password.invalid && form.controls.password.touched) {
+            <small>Password is required.</small>
+          }
+        </div>
+
+        @if (errorMessage()) {
+          <div class="auth-error">
+            {{ errorMessage() }}
+          </div>
+        }
+
+        <button
+          type="submit"
+          class="auth-submit"
+          [disabled]="form.invalid || isLoading()"
+        >
+          @if (isLoading()) {
+            Signing in...
+          } @else {
+            Sign in
+          }
+        </button>
+      </form>
+    </div>
+  </section>
+</div>

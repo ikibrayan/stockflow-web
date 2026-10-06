@@ -1,0 +1,244 @@
+<form
+  class="entity-form"
+  [formGroup]="form"
+  (ngSubmit)="submit()"
+  novalidate
+>
+  <header class="entity-form__header">
+    <div>
+      <p class="entity-form__eyebrow">
+        {{ product() ? 'Edit product' : 'New product' }}
+      </p>
+
+      <h2 class="entity-form__title">
+        {{ product() ? 'Update product' : 'Add product' }}
+      </h2>
+
+      <p class="entity-form__subtitle">
+        {{ product()
+          ? 'Update the product information below.'
+          : 'Add a new product to your catalog.' }}
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="entity-form__close"
+      (click)="close()"
+      aria-label="Close"
+    >
+      ×
+    </button>
+  </header>
+
+  <div class="entity-form__body">
+    <div class="form-field">
+      <label class="form-label" for="name">
+        Name
+      </label>
+
+      <input
+        id="name"
+        type="text"
+        class="form-control"
+        formControlName="name"
+        placeholder="Product name"
+      />
+
+      @if (
+        form.controls.name.invalid &&
+        form.controls.name.touched
+      ) {
+        <span class="form-error">
+          Product name is required.
+        </span>
+      }
+    </div>
+
+    <div class="form-field">
+      <label class="form-label" for="sku">
+        SKU
+      </label>
+
+      <input
+        id="sku"
+        type="text"
+        class="form-control"
+        formControlName="sku"
+        placeholder="IPH-17-PM"
+      />
+
+      @if (
+        form.controls.sku.invalid &&
+        form.controls.sku.touched
+      ) {
+        <span class="form-error">
+          SKU is required.
+        </span>
+      }
+    </div>
+
+    <div class="form-field">
+      <label class="form-label" for="description">
+        Description
+      </label>
+
+      <textarea
+        id="description"
+        class="form-control entity-form__textarea"
+        formControlName="description"
+        placeholder="Optional product description"
+        rows="4"
+      ></textarea>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-field">
+        <label class="form-label" for="price">
+          Price
+        </label>
+
+        <input
+          id="price"
+          type="number"
+          class="form-control"
+          formControlName="price"
+          min="0"
+          step="0.01"
+        />
+
+        @if (
+          form.controls.price.invalid &&
+          form.controls.price.touched
+        ) {
+          <span class="form-error">
+            Enter a valid price.
+          </span>
+        }
+      </div>
+
+      <div class="form-field">
+        <label class="form-label" for="stock">
+          Stock
+        </label>
+
+        <input
+          id="stock"
+          type="number"
+          class="form-control"
+          formControlName="stock"
+          min="0"
+        />
+
+        @if (
+          form.controls.stock.invalid &&
+          form.controls.stock.touched
+        ) {
+          <span class="form-error">
+            Stock cannot be negative.
+          </span>
+        }
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-field">
+        <label class="form-label" for="minimumStock">
+          Minimum stock
+        </label>
+
+        <input
+          id="minimumStock"
+          type="number"
+          class="form-control"
+          formControlName="minimumStock"
+          min="0"
+        />
+
+        @if (
+          form.controls.minimumStock.invalid &&
+          form.controls.minimumStock.touched
+        ) {
+          <span class="form-error">
+            Minimum stock cannot be negative.
+          </span>
+        }
+      </div>
+
+      <div class="form-field">
+        <label class="form-label" for="category">
+          Category
+        </label>
+
+        <select
+          id="category"
+          class="form-control"
+          formControlName="categoryId"
+        >
+          <option [ngValue]="0" disabled>
+            Select a category
+          </option>
+
+          @for (category of categories(); track category.id) {
+            <option [ngValue]="category.id">
+              {{ category.name }}
+            </option>
+          }
+        </select>
+
+        @if (
+          form.controls.categoryId.invalid &&
+          form.controls.categoryId.touched
+        ) {
+          <span class="form-error">
+            Select a category.
+          </span>
+        }
+      </div>
+    </div>
+
+    @if (product()) {
+      <label class="form-toggle">
+        <input
+          type="checkbox"
+          formControlName="isActive"
+        />
+
+        <div>
+          <strong>
+            Active product
+          </strong>
+
+          <span>
+            Inactive products remain stored but are not available for normal use.
+          </span>
+        </div>
+      </label>
+    }
+  </div>
+
+  <footer class="entity-form__footer">
+    <button
+      type="button"
+      class="btn btn-secondary"
+      (click)="close()"
+      [disabled]="isSubmitting()"
+    >
+      Cancel
+    </button>
+
+    <button
+      type="submit"
+      class="btn btn-primary"
+      [disabled]="isSubmitting()"
+    >
+      @if (isSubmitting()) {
+        Saving...
+      } @else if (product()) {
+        Save changes
+      } @else {
+        Add product
+      }
+    </button>
+  </footer>
+</form>

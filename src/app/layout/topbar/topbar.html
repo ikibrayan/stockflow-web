@@ -1,0 +1,28 @@
+<header class="topbar">
+  <div>
+    <span class="topbar__eyebrow">Workspace</span>
+  </div>
+
+  <div class="topbar__right">
+    @if (currentUser(); as user) {
+      <div class="topbar__user">
+        <div class="topbar__avatar">
+          {{ user.name.charAt(0) }}
+        </div>
+
+        <div class="topbar__user-info">
+          <strong>{{ user.name }}</strong>
+          <span>{{ user.role }}</span>
+        </div>
+      </div>
+    }
+
+    <button
+      type="button"
+      class="btn btn-secondary"
+      (click)="logout()"
+    >
+      Logout
+    </button>
+  </div>
+</header>
